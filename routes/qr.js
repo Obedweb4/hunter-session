@@ -1,9 +1,9 @@
 const { 
     giftedId,
     removeFile
-} = require('../gift');
+} = require('../hunter');
 const { SESSION_PREFIX, GC_JID, BOT_REPO, WA_CHANNEL, MSG_FOOTER } = require('../config');
-const { isConfigured, saveSession } = require('../gift/sessionStore');
+const { isConfigured, saveSession } = require('../hunter/sessionStore');
 const QRCode = require('qrcode');
 const express = require('express');
 const zlib = require('zlib');
