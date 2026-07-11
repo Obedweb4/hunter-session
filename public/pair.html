@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>HUNTER XMD | Pair Code Login</title>
   <meta name="description" content="Link your WhatsApp account to Hunter-XMD using a pair code. Fast, secure, and simple.">
-  <meta name="theme-color" content="#2563eb">
+  <meta name="theme-color" content="#0a0c08">
   <meta property="og:type" content="website">
   <meta property="og:title" content="HUNTER XMD | Pair Code Login">
   <meta property="og:description" content="Link your WhatsApp with Hunter-XMD using a pair code — no QR scan needed.">
@@ -14,229 +14,163 @@
   <meta name="twitter:image" content="https://files.gifted.co.ke/image/u90mimage.jpg">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #07070e;
-      color: #f1f1f1;
-      min-height: 100vh;
-      overflow-x: hidden;
-      scrollbar-width: none;
+    :root{
+      --bg:#0a0c08; --panel:#12140d; --panel-alt:#171a10;
+      --border:#242819; --grid:rgba(255,122,26,0.05);
+      --accent:#ff7a1a; --accent-soft:rgba(255,122,26,0.14); --accent-dim:#c4570a;
+      --signal:#6bff5c; --text:#eae7dc; --dim:#8b9078; --danger:#ff5c5c;
     }
-    body::-webkit-scrollbar { display: none; }
-
-    .gradient-text {
-      background: linear-gradient(135deg, #60a5fa 0%, #0ea5e9 50%, #2563eb 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    *,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+    body{
+      font-family:'IBM Plex Sans', sans-serif;
+      background-color:var(--bg);
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size:44px 44px;
+      color:var(--text);
+      min-height:100vh; overflow-x:hidden; scrollbar-width:none;
     }
-    .gradient-bg { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+    body::-webkit-scrollbar{ display:none; }
+    .mono{ font-family:'JetBrains Mono', monospace; }
+    .display{ font-family:'Space Grotesk', sans-serif; }
 
-    .blob {
-      position: fixed; border-radius: 50%;
-      filter: blur(90px); pointer-events: none; z-index: 0; will-change: transform;
+    .frame-corner{ position:fixed; width:22px; height:22px; z-index:40; pointer-events:none; opacity:.5; }
+    .frame-corner.tl{ top:14px; left:14px; border-top:1px solid var(--accent); border-left:1px solid var(--accent); }
+    .frame-corner.tr{ top:14px; right:14px; border-top:1px solid var(--accent); border-right:1px solid var(--accent); }
+    .frame-corner.bl{ bottom:14px; left:14px; border-bottom:1px solid var(--accent); border-left:1px solid var(--accent); }
+    .frame-corner.br{ bottom:14px; right:14px; border-bottom:1px solid var(--accent); border-right:1px solid var(--accent); }
+
+    .eyebrow{ font-family:'JetBrains Mono', monospace; text-transform:uppercase; letter-spacing:.16em; font-size:.7rem; color:var(--accent); }
+    .status-dot{ width:6px; height:6px; border-radius:50%; background:var(--signal); box-shadow:0 0 6px var(--signal); animation:blink 1.8s ease-in-out infinite; }
+    @keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:.35;} }
+
+    .reticle{ position:relative; }
+    .reticle::before{ content:''; position:absolute; top:-1px; left:-1px; width:16px; height:16px; border-top:2px solid var(--accent); border-left:2px solid var(--accent); }
+    .reticle::after{ content:''; position:absolute; bottom:-1px; right:-1px; width:16px; height:16px; border-bottom:2px solid var(--accent); border-right:2px solid var(--accent); }
+
+    .nav-bar{ background:rgba(10,12,8,0.92); border-bottom:1px solid var(--border); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+    .nav-link{ position:relative; font-family:'JetBrains Mono', monospace; font-size:.78rem; letter-spacing:.03em; color:var(--dim); text-decoration:none; transition:color .18s ease; }
+    .nav-link:hover{ color:var(--accent); }
+    .nav-link.active{ color:var(--accent); }
+
+    .sidebar-link{ display:flex; align-items:center; gap:12px; padding:10px 12px; border:1px solid transparent; color:var(--dim); text-decoration:none; font-family:'JetBrains Mono', monospace; font-size:.8rem; transition:border-color .18s ease, color .18s ease, background .18s ease; }
+    .sidebar-link:hover{ border-color:var(--border); color:var(--accent); background:var(--panel); }
+    .sidebar-link i{ width:16px; text-align:center; font-size:.85rem; }
+    #sidebar{ transition:transform .3s cubic-bezier(.4,0,.2,1); }
+    #sidebarOverlay{ transition:opacity .3s ease; }
+
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:9px;
+      padding:12px 24px; font-family:'JetBrains Mono', monospace; font-weight:600; font-size:.78rem;
+      text-transform:uppercase; letter-spacing:.05em; text-decoration:none; cursor:pointer; border:none;
+      clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+      transition:transform .16s ease, box-shadow .16s ease, background .16s ease, opacity .16s ease;
+      width:100%;
     }
-    @keyframes blobFloat {
-      0%,100% { transform: translate(0,0) scale(1); }
-      50%      { transform: translate(20px,-20px) scale(1.05); }
+    .btn:active{ transform:scale(.97) !important; }
+    .btn-primary{ background:var(--accent); color:#0a0c08; }
+    .btn-primary:hover{ box-shadow:0 0 0 1px var(--accent), 0 10px 26px rgba(255,122,26,.25); transform:translateY(-2px); }
+    .btn-primary:disabled{ opacity:.55; cursor:not-allowed; transform:none !important; box-shadow:none !important; }
+    .btn-ghost{ background:var(--panel); border:1px solid var(--border); color:var(--text); width:auto; }
+    .btn-ghost:hover{ border-color:var(--accent-dim); color:var(--accent); transform:translateY(-2px); }
+
+    .social-icon{ width:32px; height:32px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--dim); font-size:.85rem; text-decoration:none; transition:border-color .18s ease, color .18s ease; }
+    .social-icon:hover{ border-color:var(--accent); color:var(--accent); }
+    .footer-link{ color:var(--dim); text-decoration:none; font-size:.82rem; }
+    .divider-line{ height:1px; background:linear-gradient(90deg, transparent, var(--border), transparent); }
+
+    .console{ background:var(--panel); border:1px solid var(--border); }
+
+    .input-field{
+      background:var(--panel-alt); border:1px solid var(--border); color:var(--text);
+      font-family:'JetBrains Mono', monospace; font-size:.9rem; width:100%;
+      transition:border-color .2s ease, box-shadow .2s ease;
     }
+    .input-field::placeholder{ color:#4d5240; }
+    .input-field:focus{ outline:none; border-color:var(--accent-dim); box-shadow:0 0 0 3px var(--accent-soft); }
 
-    .nav-glass {
-      background: rgba(7,7,14,0.85);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: 0 0 22px 22px;
-    }
-    .nav-link { position: relative; transition: color 0.2s ease; }
-    .nav-link::after {
-      content: '';
-      position: absolute; bottom: -2px; left: 0;
-      width: 0; height: 2px;
-      background: linear-gradient(90deg, #60a5fa, #2563eb);
-      transition: width 0.22s ease; border-radius: 2px;
-    }
-    .nav-link:hover { color: #60a5fa; }
-    .nav-link:hover::after { width: 100%; }
+    @keyframes shake{ 0%,100%{transform:translateX(0);} 20%,60%{transform:translateX(-6px);} 40%,80%{transform:translateX(6px);} }
+    .shake{ animation:shake .4s ease; }
+    @keyframes spinOnce{ to{ transform:rotate(360deg); } }
+    .spinner{ width:16px; height:16px; border:2px solid rgba(255,255,255,.25); border-top-color:#0a0c08; border-radius:50%; animation:spinOnce .7s linear infinite; }
 
-    .sidebar-link {
-      display: flex; align-items: center; gap: 12px;
-      padding: 10px 12px; border-radius: 10px;
-      color: #9ca3af; text-decoration: none;
-      font-size: 0.875rem; font-weight: 500;
-      transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
-    }
-    .sidebar-link:hover { background: rgba(37,99,235,0.12); color: #60a5fa; transform: translateX(4px); }
-    .sidebar-link i { width: 18px; text-align: center; font-size: 0.9rem; }
-
-    #sidebar { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); }
-    #sidebarOverlay { transition: opacity 0.3s ease; }
-
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 11px 24px; border-radius: 12px;
-      font-weight: 600; font-size: 0.875rem;
-      cursor: pointer; border: none; text-decoration: none;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, opacity 0.18s ease;
-      will-change: transform;
-    }
-    .btn:active { transform: scale(0.97) !important; }
-    .btn-primary { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; }
-    .btn-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 30px rgba(37,99,235,0.45); }
-    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
-    .btn-ghost { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #fff; }
-    .btn-ghost:hover { transform: translateY(-2px); background: rgba(255,255,255,0.1); }
-
-    .icon-animated {
-      display: inline-flex; align-items: center; justify-content: center;
-      transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    .btn:hover .icon-animated { transform: scale(1.25) rotate(-8deg); }
-
-    .social-icon {
-      width: 34px; height: 34px; border-radius: 8px;
-      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-      display: flex; align-items: center; justify-content: center;
-      color: #6b7280; font-size: 0.85rem; text-decoration: none;
-      transition: background 0.2s, color 0.2s, transform 0.2s;
-    }
-    .social-icon:hover { background: rgba(37,99,235,0.2); color: #60a5fa; transform: translateY(-3px); }
-
-    .footer-link { color: #6b7280; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; transition: color 0.18s, transform 0.18s; }
-    .footer-link:hover { color: #60a5fa; transform: translateX(4px); }
-    .divider-line { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent); }
-
-    .card {
-      background: rgba(15,15,26,0.95);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 22px;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(37,99,235,0.08);
+    .code-display{
+      font-family:'JetBrains Mono', monospace; font-size:2rem; font-weight:700; letter-spacing:6px; color:var(--accent);
+      text-shadow:0 0 22px rgba(255,122,26,.35);
     }
 
-    .input-field {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: #f1f1f1; border-radius: 12px;
-      font-size: 0.875rem;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-      width: 100%;
+    .copy-btn{
+      transition:transform .18s ease, background .18s ease; background:var(--panel-alt); border:1px solid var(--border);
+      color:var(--accent); padding:8px 18px; font-size:.78rem; font-weight:600; font-family:'JetBrains Mono', monospace;
+      text-transform:uppercase; letter-spacing:.03em; cursor:pointer; display:flex; align-items:center; gap:6px;
     }
-    .input-field::placeholder { color: #4b5563; }
-    .input-field:focus {
-      outline: none;
-      border-color: rgba(59,130,246,0.5);
-      box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
-    }
+    .copy-btn:hover{ border-color:var(--accent-dim); transform:translateY(-2px); }
+    .copy-btn.copied{ background:rgba(107,255,92,0.1); border-color:rgba(107,255,92,.35); color:var(--signal); }
 
-    @keyframes shake {
-      0%,100% { transform: translateX(0); }
-      20%,60%  { transform: translateX(-6px); }
-      40%,80%  { transform: translateX(6px); }
+    .new-btn{
+      transition:transform .18s ease, background .18s ease; background:transparent; border:1px solid var(--border);
+      color:var(--dim); padding:8px 18px; font-size:.78rem; font-weight:600; font-family:'JetBrains Mono', monospace;
+      text-transform:uppercase; letter-spacing:.03em; cursor:pointer; display:flex; align-items:center; gap:6px;
     }
-    .shake { animation: shake 0.4s ease; }
+    .new-btn:hover{ background:var(--panel-alt); color:var(--text); transform:translateY(-2px); }
 
-    @keyframes spinOnce {
-      to { transform: rotate(360deg); }
-    }
-    .spinner {
-      width: 16px; height: 16px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: #fff; border-radius: 50%;
-      animation: spinOnce 0.7s linear infinite;
-    }
-
-    .code-display {
-      font-size: 2rem; font-weight: 800; letter-spacing: 6px;
-      background: linear-gradient(135deg, #60a5fa, #0ea5e9, #2563eb);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
-
-    .copy-btn {
-      transition: transform 0.18s ease, background 0.18s ease;
-      background: rgba(37,99,235,0.15); border: 1px solid rgba(59,130,246,0.25);
-      border-radius: 10px; color: #60a5fa;
-      padding: 8px 18px; font-size: 0.8rem; font-weight: 600;
-      cursor: pointer; display: flex; align-items: center; gap: 6px;
-    }
-    .copy-btn:hover { background: rgba(37,99,235,0.28); transform: translateY(-2px); }
-    .copy-btn.copied { background: rgba(74,222,128,0.15); border-color: rgba(74,222,128,0.3); color: #4ade80; }
-
-    .new-btn {
-      transition: transform 0.18s ease, background 0.18s ease;
-      background: transparent; border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px; color: #9ca3af;
-      padding: 8px 18px; font-size: 0.8rem; font-weight: 600;
-      cursor: pointer; display: flex; align-items: center; gap: 6px;
-    }
-    .new-btn:hover { background: rgba(255,255,255,0.06); transform: translateY(-2px); color: #fff; }
-
-    [data-anim] {
-      will-change: transform, opacity;
-      transition: opacity 0.65s cubic-bezier(0.4,0,0.2,1), transform 0.65s cubic-bezier(0.4,0,0.2,1);
-    }
-    [data-anim="fade-up"]    { opacity: 0; transform: translateY(28px); }
-    [data-anim="zoom-in"]    { opacity: 0; transform: scale(0.9); }
-    [data-anim="slide-left"] { opacity: 0; transform: translateX(-28px); }
-    [data-anim="slide-right"]{ opacity: 0; transform: translateX(28px); }
-    [data-anim].in-view { opacity: 1; transform: translateY(0) scale(1) translateX(0); }
-    [data-delay="1"] { transition-delay: 0.1s; }
-    [data-delay="2"] { transition-delay: 0.2s; }
-    [data-delay="3"] { transition-delay: 0.3s; }
-    [data-delay="4"] { transition-delay: 0.4s; }
+    [data-anim]{ will-change:transform, opacity; transition:opacity .6s cubic-bezier(.4,0,.2,1), transform .6s cubic-bezier(.4,0,.2,1); }
+    [data-anim="fade-up"]{ opacity:0; transform:translateY(24px); }
+    [data-anim="zoom-in"]{ opacity:0; transform:scale(.94); }
+    [data-anim].in-view{ opacity:1; transform:translateY(0) scale(1) translateX(0); }
+    [data-delay="1"]{ transition-delay:.08s; }
+    [data-delay="2"]{ transition-delay:.16s; }
   </style>
 </head>
 <body>
-  <div class="blob w-96 h-96 bg-blue-800/18 top-[-80px] left-[-80px]" style="animation:blobFloat 14s ease-in-out infinite;"></div>
-  <div class="blob w-72 h-72 bg-blue-600/12 bottom-[10%] right-[-60px]" style="animation:blobFloat 18s ease-in-out 5s infinite;"></div>
+  <div class="frame-corner tl"></div>
+  <div class="frame-corner tr"></div>
+  <div class="frame-corner bl"></div>
+  <div class="frame-corner br"></div>
 
-  <nav class="nav-glass sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-5 h-12 flex items-center justify-between">
+  <nav class="nav-bar sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
       <a href="/" class="flex items-center gap-3 no-underline">
-        <img src="https://files.gifted.co.ke/image/u90mimage.jpg" alt="HUNTER XMD" class="w-8 h-8 rounded-full border border-blue-500/50 object-cover" style="transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow='0 0 14px rgba(59,130,246,0.6)'" onmouseout="this.style.boxShadow='none'">
-        <span class="text-base font-bold gradient-text">HUNTER-XMD</span>
+        <div class="reticle" style="padding:2px;">
+          <img src="https://files.gifted.co.ke/image/u90mimage.jpg" alt="HUNTER XMD" class="w-8 h-8 object-cover">
+        </div>
+        <span class="display font-bold text-base tracking-wide">HUNTER<span style="color:var(--accent)">·</span>XMD</span>
       </a>
       <div class="hidden md:flex items-center gap-7">
-        <a href="https://github.com/mauricegift/atassa" target="_blank" class="nav-link text-gray-400 text-sm font-medium no-underline flex items-center gap-1.5"><i class="fab fa-github text-xs"></i> Source Code</a>
-        <a href="/pair" class="nav-link text-blue-400 text-sm font-medium no-underline flex items-center gap-1.5"><i class="fas fa-link text-xs"></i> Pair Code</a>
-        <a href="/qr" class="nav-link text-gray-400 text-sm font-medium no-underline flex items-center gap-1.5"><i class="fas fa-qrcode text-xs"></i> QR Code</a>
-        <a href="https://t.me/mauricegift" target="_blank" class="nav-link text-gray-400 text-sm font-medium no-underline flex items-center gap-1.5"><i class="fab fa-telegram text-xs"></i> Support</a>
+        <a href="https://github.com/mauricegift/atassa" target="_blank" class="nav-link">[ SOURCE ]</a>
+        <a href="/pair" class="nav-link active">[ PAIR ]</a>
+        <a href="/qr" class="nav-link">[ QR ]</a>
+        <a href="https://t.me/mauricegift" target="_blank" class="nav-link">[ SUPPORT ]</a>
       </div>
       <div class="flex items-center gap-3">
-        <a href="/qr" class="hidden md:inline-flex btn btn-ghost py-2 px-4 text-xs">
-          <span class="icon-animated"><i class="fas fa-qrcode"></i></span> Use QR Instead
-        </a>
-        <button id="menuBtn" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 border border-white/8 text-gray-500 outline-none focus:outline-none focus:ring-0" style="transition:background 0.18s, color 0.18s;">
+        <a href="/qr" class="hidden md:inline-flex btn btn-ghost py-2 px-4 text-xs"><i class="fas fa-qrcode"></i> Use QR Instead</a>
+        <button id="menuBtn" class="md:hidden w-9 h-9 flex items-center justify-center border border-[var(--border)]" style="color:var(--dim);">
           <i class="fas fa-bars" id="menuIcon"></i>
         </button>
       </div>
     </div>
   </nav>
 
-  <div id="sidebarOverlay" class="fixed inset-0 z-40 bg-black/60 opacity-0 pointer-events-none"></div>
-  <aside id="sidebar" class="fixed top-0 left-0 z-50 h-full w-72 bg-[#0a0a14] border-r border-white/6 flex flex-col pt-5 pb-8 transform -translate-x-full rounded-r-3xl">
-    <div class="flex items-center justify-between px-5 mb-6">
-      <a href="/" class="flex items-center gap-2.5 no-underline">
-        <img src="https://files.gifted.co.ke/image/u90mimage.jpg" alt="HUNTER XMD" class="w-8 h-8 rounded-full border border-blue-500/50 object-cover">
-        <span class="text-sm font-bold gradient-text">HUNTER-XMD</span>
-      </a>
-      <button id="closeBtn" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 text-gray-400" style="transition:background 0.18s,color 0.18s;">
-        <i class="fas fa-times text-sm"></i>
-      </button>
+  <div id="sidebarOverlay" class="fixed inset-0 bg-black/70 z-40 opacity-0 pointer-events-none md:hidden"></div>
+  <aside id="sidebar" class="fixed top-0 left-0 h-full w-72 z-50 -translate-x-full md:hidden" style="background:var(--panel); border-right:1px solid var(--border);">
+    <div class="p-5 flex items-center justify-between" style="border-bottom:1px solid var(--border);">
+      <span class="display font-bold text-sm tracking-wide">HUNTER·XMD</span>
+      <button id="closeBtn" class="w-8 h-8 flex items-center justify-center" style="color:var(--dim);"><i class="fas fa-times"></i></button>
     </div>
-    <div class="px-3 flex-1 space-y-1">
-      <a href="/" class="sidebar-link"><i class="fas fa-home"></i> Home</a>
-      <a href="/pair" class="sidebar-link" style="background:rgba(37,99,235,0.1);color:#60a5fa;"><i class="fas fa-link"></i> Pair Code</a>
+    <div class="p-4 flex flex-col gap-1.5">
+      <a href="/" class="sidebar-link"><i class="fas fa-house"></i> Home</a>
+      <a href="/pair" class="sidebar-link" style="color:var(--accent); border-color:var(--border);"><i class="fas fa-link"></i> Pair Code</a>
       <a href="/qr" class="sidebar-link"><i class="fas fa-qrcode"></i> QR Code</a>
       <a href="https://github.com/mauricegift/atassa" target="_blank" class="sidebar-link"><i class="fab fa-github"></i> Source Code</a>
       <a href="https://t.me/mauricegift" target="_blank" class="sidebar-link"><i class="fab fa-telegram"></i> Support</a>
       <a href="https://whatsapp.com/channel/0029VbCpYtZLtOj5LDuj7Q1p" target="_blank" class="sidebar-link"><i class="fab fa-whatsapp"></i> WA Channel</a>
     </div>
-    <div class="px-5 pt-5 border-t border-white/6">
-      <p class="text-gray-600 text-xs">Powered by OBED TECH</p>
+    <div class="p-4 mt-auto" style="border-top:1px solid var(--border);">
+      <p class="mono text-xs" style="color:var(--dim)">Powered by OBED TECH</p>
     </div>
   </aside>
 
@@ -246,23 +180,21 @@
 
         <div class="text-center mb-8" data-anim="fade-up">
           <div class="flex justify-center mb-4">
-            <div class="relative">
-              <img src="https://files.gifted.co.ke/image/u90mimage.jpg" alt="HUNTER XMD" class="w-20 h-20 rounded-full border-2 border-blue-500/60 object-cover" style="box-shadow:0 0 0 6px rgba(37,99,235,0.1),0 0 30px rgba(37,99,235,0.25);">
-              <span class="absolute -bottom-1 -right-1 w-6 h-6 bg-[#0a0a14] rounded-full border border-blue-500/40 flex items-center justify-center">
-                <i class="fas fa-link text-blue-400 text-xs"></i>
-              </span>
+            <div class="reticle p-2">
+              <img src="https://files.gifted.co.ke/image/u90mimage.jpg" alt="HUNTER XMD" class="w-16 h-16 object-cover">
             </div>
           </div>
-          <h1 class="text-2xl font-bold gradient-text mb-1">Pair Code Login</h1>
-          <p class="text-gray-500 text-sm">Enter your WhatsApp number — no + sign needed</p>
+          <p class="eyebrow mb-2">auth // pair-code</p>
+          <h1 class="display font-bold text-2xl mb-1">Pair Code Login</h1>
+          <p class="text-sm" style="color:var(--dim)">Enter your WhatsApp number — no + sign needed</p>
         </div>
 
-        <div class="card p-7" data-anim="zoom-in" data-delay="1">
+        <div class="console p-7" data-anim="zoom-in" data-delay="1">
           <div id="formSection">
             <div class="mb-5">
-              <label for="phoneNumber" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Phone Number</label>
+              <label for="phoneNumber" class="eyebrow block mb-2">Phone Number</label>
               <div class="relative">
-                <i class="fas fa-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 text-xs"></i>
+                <i class="fas fa-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-xs" style="color:var(--dim)"></i>
                 <input
                   id="phoneNumber"
                   type="text"
@@ -272,63 +204,63 @@
                   class="input-field pl-10 pr-4 py-3"
                 >
               </div>
-              <p id="phoneError" class="text-red-400 text-xs mt-2 hidden flex items-center gap-1.5">
+              <p id="phoneError" class="text-xs mt-2 hidden flex items-center gap-1.5" style="color:var(--danger)">
                 <i class="fas fa-exclamation-circle"></i>
                 <span id="phoneErrorText"></span>
               </p>
             </div>
 
             <div class="mb-5">
-              <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Session Type</label>
-              <div class="flex rounded-xl overflow-hidden border border-white/10 bg-white/[0.03]">
+              <label class="eyebrow block mb-2">Session Type</label>
+              <div class="flex border border-[var(--border)]" style="background:var(--panel-alt);">
                 <button type="button" id="typeShort" onclick="selectType('short')"
-                  class="flex-1 py-2.5 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200"
-                  style="background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;">
+                  class="flex-1 py-2.5 text-xs font-semibold mono flex items-center justify-center gap-1.5 transition-all duration-200"
+                  style="background:var(--accent);color:#0a0c08;">
                   <i class="fas fa-database text-xs"></i> Short
                 </button>
                 <button type="button" id="typeLong" onclick="selectType('long')"
-                  class="flex-1 py-2.5 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200"
-                  style="background:transparent;color:#6b7280;">
+                  class="flex-1 py-2.5 text-xs font-semibold mono flex items-center justify-center gap-1.5 transition-all duration-200"
+                  style="background:transparent;color:var(--dim);">
                   <i class="fas fa-file-code text-xs"></i> Long
                 </button>
               </div>
             </div>
 
-            <button id="submitBtn" class="btn btn-primary w-full py-3 text-sm">
+            <button id="submitBtn" class="btn btn-primary py-3 text-sm">
               <span id="btnContent" class="flex items-center gap-2">
-                <span class="icon-animated"><i class="fas fa-bolt"></i></span>
+                <i class="fas fa-bolt"></i>
                 <span>GET PAIR CODE</span>
               </span>
               <span id="btnLoading" class="hidden flex items-center gap-2">
                 <span class="spinner"></span>
-                <span>Fetching code...</span>
+                <span>FETCHING CODE...</span>
               </span>
             </button>
 
-            <p id="generalError" class="text-red-400 text-xs text-center mt-3 hidden"></p>
+            <p id="generalError" class="text-xs text-center mt-3 hidden" style="color:var(--danger)"></p>
 
-            <div class="mt-5 pt-5 border-t border-white/6 flex items-center justify-center gap-3">
-              <span class="text-gray-600 text-xs">Prefer QR?</span>
-              <a href="/qr" class="text-blue-400 text-xs font-medium no-underline flex items-center gap-1" style="transition:color 0.18s;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#3b82f6'">
+            <div class="mt-5 pt-5 flex items-center justify-center gap-3" style="border-top:1px solid var(--border);">
+              <span class="text-xs" style="color:var(--dim)">Prefer QR?</span>
+              <a href="/qr" class="text-xs font-medium no-underline flex items-center gap-1" style="color:var(--accent);">
                 <i class="fas fa-qrcode text-xs"></i> Scan QR Code instead
               </a>
             </div>
           </div>
 
           <div id="resultSection" class="hidden">
-            <div id="fallbackBanner" class="hidden mb-4 rounded-xl p-3.5 border border-blue-500/25 bg-blue-900/10 flex items-start gap-3">
-              <i class="fas fa-info-circle text-blue-400 mt-0.5 text-sm flex-shrink-0"></i>
-              <p class="text-blue-300 text-xs leading-relaxed">Session store is not configured — automatically switched to <strong>Long session</strong>.</p>
+            <div id="fallbackBanner" class="hidden mb-4 p-3.5 border flex items-start gap-3" style="border-color:var(--accent-dim); background:var(--accent-soft);">
+              <i class="fas fa-info-circle mt-0.5 text-sm flex-shrink-0" style="color:var(--accent)"></i>
+              <p class="text-xs leading-relaxed" style="color:var(--text)">Session store is not configured — automatically switched to <strong>Long session</strong>.</p>
             </div>
             <div class="text-center mb-6">
-              <div class="w-10 h-10 rounded-xl bg-green-500/15 border border-green-500/25 flex items-center justify-center mx-auto mb-3">
-                <i class="fas fa-check text-green-400"></i>
+              <div class="w-10 h-10 border flex items-center justify-center mx-auto mb-3" style="border-color:rgba(107,255,92,.35); background:rgba(107,255,92,.08);">
+                <i class="fas fa-check" style="color:var(--signal)"></i>
               </div>
-              <p class="text-white font-semibold text-sm mb-1">Your Pair Code</p>
-              <p class="text-gray-500 text-xs">Enter this in WhatsApp → Linked Devices → Link a Device</p>
+              <p class="font-semibold text-sm mb-1">Your Pair Code</p>
+              <p class="text-xs" style="color:var(--dim)">Enter this in WhatsApp → Linked Devices → Link a Device</p>
             </div>
 
-            <div class="bg-blue-900/12 border border-blue-500/18 rounded-2xl p-5 text-center mb-5">
+            <div class="p-5 text-center mb-5" style="background:var(--panel-alt); border:1px solid var(--border);">
               <p id="pairCode" class="code-display"></p>
             </div>
 
@@ -342,8 +274,8 @@
               </button>
             </div>
 
-            <div class="mt-5 pt-5 border-t border-white/6 text-center">
-              <a href="/" class="text-gray-500 text-xs no-underline flex items-center justify-center gap-1.5" style="transition:color 0.18s;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#6b7280'">
+            <div class="mt-5 pt-5 text-center" style="border-top:1px solid var(--border);">
+              <a href="/" class="text-xs no-underline flex items-center justify-center gap-1.5" style="color:var(--dim);">
                 <i class="fas fa-arrow-left text-xs"></i> Back to Home
               </a>
             </div>
@@ -351,31 +283,33 @@
         </div>
 
         <div class="mt-8 grid grid-cols-3 gap-3" data-anim="fade-up" data-delay="2">
-          <div class="bg-white/[0.025] border border-white/6 rounded-xl p-3 text-center">
-            <i class="fas fa-shield-alt text-blue-400 text-sm mb-1.5 block"></i>
-            <p class="text-gray-500 text-xs">Encrypted</p>
+          <div class="p-3 text-center" style="background:var(--panel); border:1px solid var(--border);">
+            <i class="fas fa-shield-alt text-sm mb-1.5 block" style="color:var(--accent)"></i>
+            <p class="text-xs" style="color:var(--dim)">Encrypted</p>
           </div>
-          <div class="bg-white/[0.025] border border-white/6 rounded-xl p-3 text-center">
-            <i class="fas fa-bolt text-blue-400 text-sm mb-1.5 block"></i>
-            <p class="text-gray-500 text-xs">Instant</p>
+          <div class="p-3 text-center" style="background:var(--panel); border:1px solid var(--border);">
+            <i class="fas fa-bolt text-sm mb-1.5 block" style="color:var(--accent)"></i>
+            <p class="text-xs" style="color:var(--dim)">Instant</p>
           </div>
-          <div class="bg-white/[0.025] border border-white/6 rounded-xl p-3 text-center">
-            <i class="fas fa-mobile-alt text-blue-400 text-sm mb-1.5 block"></i>
-            <p class="text-gray-500 text-xs">No Phone</p>
+          <div class="p-3 text-center" style="background:var(--panel); border:1px solid var(--border);">
+            <i class="fas fa-mobile-alt text-sm mb-1.5 block" style="color:var(--accent)"></i>
+            <p class="text-xs" style="color:var(--dim)">No Phone</p>
           </div>
         </div>
       </div>
     </section>
 
     <div class="divider-line"></div>
-    <footer class="py-8 px-5 bg-[#040408]">
+    <footer class="py-8 px-5" style="background:var(--panel);">
       <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <a href="/" class="flex items-center gap-2 no-underline">
-          <img src="https://files.gifted.co.ke/image/u90mimage.jpg" alt="HUNTER XMD" class="w-6 h-6 rounded-full border border-blue-500/40 object-cover">
-          <span class="text-xs font-bold gradient-text">HUNTER-XMD</span>
+          <div class="reticle" style="padding:1px;">
+            <img src="https://files.gifted.co.ke/image/u90mimage.jpg" alt="HUNTER XMD" class="w-6 h-6 object-cover">
+          </div>
+          <span class="mono text-xs font-bold">HUNTER-XMD</span>
         </a>
-        <p class="text-gray-700 text-xs text-center">
-          &copy; <span id="yr"></span> HUNTER-XMD &mdash; Built by <a href="https://github.com/mauricegift" target="_blank" class="text-blue-400 no-underline font-medium" style="transition:color 0.18s;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#3b82f6'">OBED TECH</a>
+        <p class="mono text-xs text-center" style="color:var(--dim)">
+          &copy; <span id="yr"></span> HUNTER-XMD &mdash; Built by <a href="https://github.com/mauricegift" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:600;">OBED TECH</a>
         </p>
         <div class="flex gap-2">
           <a href="https://github.com/mauricegift/atassa" target="_blank" class="social-icon"><i class="fab fa-github"></i></a>
@@ -425,7 +359,6 @@
       const img = new Image();
       img.crossOrigin = 'anonymous';
       img.onload = () => {
-        ctx.beginPath(); ctx.arc(32,32,32,0,Math.PI*2); ctx.closePath(); ctx.clip();
         ctx.drawImage(img, 0, 0, 64, 64);
         const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
         link.type = 'image/png'; link.rel = 'shortcut icon';
@@ -440,15 +373,15 @@
       const shortBtn = document.getElementById('typeShort');
       const longBtn  = document.getElementById('typeLong');
       if (type === 'short') {
-        shortBtn.style.background = 'linear-gradient(135deg,#2563eb,#1d4ed8)';
-        shortBtn.style.color = '#fff';
+        shortBtn.style.background = '#ff7a1a';
+        shortBtn.style.color = '#0a0c08';
         longBtn.style.background = 'transparent';
-        longBtn.style.color = '#6b7280';
+        longBtn.style.color = '#8b9078';
       } else {
-        longBtn.style.background = 'linear-gradient(135deg,#2563eb,#1d4ed8)';
-        longBtn.style.color = '#fff';
+        longBtn.style.background = '#ff7a1a';
+        longBtn.style.color = '#0a0c08';
         shortBtn.style.background = 'transparent';
-        shortBtn.style.color = '#6b7280';
+        shortBtn.style.color = '#8b9078';
       }
     }
 

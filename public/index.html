@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>HUNTER XMD | WhatsApp Bot Session Generator</title>
-  <meta name="description" content="Hunter-XMD — powerful WhatsApp bot session generator with pair code and QR code login. Fast, secure, and easy to use.">
-  <meta name="theme-color" content="#2563eb">
+  <meta name="description" content="Hunter-XMD — generate a WhatsApp bot session with a pair code or QR scan. Fast, secure, self-hosted.">
+  <meta name="theme-color" content="#0a0c08">
   <meta property="og:type" content="website">
   <meta property="og:title" content="HUNTER XMD | WhatsApp Bot">
   <meta property="og:description" content="Generate your WhatsApp session with Hunter-XMD. Supports pair code and QR code login methods.">
@@ -18,294 +18,172 @@
   <meta name="twitter:image" content="https://files.gifted.co.ke/image/u90mimage.jpg">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #07070e;
-      color: #f1f1f1;
-      min-height: 100vh;
-      overflow-x: hidden;
-      scrollbar-width: none;
+    :root{
+      --bg:#0a0c08; --panel:#12140d; --panel-alt:#171a10;
+      --border:#242819; --grid:rgba(255,122,26,0.05);
+      --accent:#ff7a1a; --accent-soft:rgba(255,122,26,0.14); --accent-dim:#c4570a;
+      --signal:#6bff5c; --text:#eae7dc; --dim:#8b9078; --danger:#ff5c5c;
     }
-    body::-webkit-scrollbar { display: none; }
+    *,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+    html{ scroll-behavior:smooth; }
+    body{
+      font-family:'IBM Plex Sans', sans-serif;
+      background-color:var(--bg);
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size:44px 44px;
+      color:var(--text);
+      min-height:100vh; overflow-x:hidden; scrollbar-width:none;
+    }
+    body::-webkit-scrollbar{ display:none; }
+    .mono{ font-family:'JetBrains Mono', monospace; }
+    .display{ font-family:'Space Grotesk', sans-serif; }
 
-    .gradient-text {
-      background: linear-gradient(135deg, #60a5fa 0%, #0ea5e9 50%, #2563eb 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .gradient-bg { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+    .frame-corner{ position:fixed; width:22px; height:22px; z-index:40; pointer-events:none; opacity:.5; }
+    .frame-corner.tl{ top:14px; left:14px; border-top:1px solid var(--accent); border-left:1px solid var(--accent); }
+    .frame-corner.tr{ top:14px; right:14px; border-top:1px solid var(--accent); border-right:1px solid var(--accent); }
+    .frame-corner.bl{ bottom:14px; left:14px; border-bottom:1px solid var(--accent); border-left:1px solid var(--accent); }
+    .frame-corner.br{ bottom:14px; right:14px; border-bottom:1px solid var(--accent); border-right:1px solid var(--accent); }
 
-    .blob {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(90px);
-      pointer-events: none;
-      z-index: 0;
-      will-change: transform;
-    }
+    .eyebrow{ font-family:'JetBrains Mono', monospace; text-transform:uppercase; letter-spacing:.16em; font-size:.7rem; color:var(--accent); }
 
-    @keyframes blobFloat {
-      0%,100% { transform: translate(0,0) scale(1); }
-      50%      { transform: translate(20px, -20px) scale(1.05); }
-    }
+    .status-dot{ width:6px; height:6px; border-radius:50%; background:var(--signal); box-shadow:0 0 6px var(--signal); animation:blink 1.8s ease-in-out infinite; }
+    @keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:.35;} }
 
-    .nav-glass {
-      background: rgba(7,7,14,0.85);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: 0 0 22px 22px;
-    }
+    .reticle{ position:relative; }
+    .reticle::before{ content:''; position:absolute; top:-1px; left:-1px; width:16px; height:16px; border-top:2px solid var(--accent); border-left:2px solid var(--accent); }
+    .reticle::after{ content:''; position:absolute; bottom:-1px; right:-1px; width:16px; height:16px; border-bottom:2px solid var(--accent); border-right:2px solid var(--accent); }
 
-    .nav-link {
-      position: relative;
-      transition: color 0.2s ease;
-    }
-    .nav-link::after {
-      content: '';
-      position: absolute;
-      bottom: -2px; left: 0;
-      width: 0; height: 2px;
-      background: linear-gradient(90deg, #60a5fa, #2563eb);
-      transition: width 0.22s ease;
-      border-radius: 2px;
-    }
-    .nav-link:hover { color: #60a5fa; }
-    .nav-link:hover::after { width: 100%; }
+    .nav-bar{ background:rgba(10,12,8,0.92); border-bottom:1px solid var(--border); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+    .nav-link{ position:relative; font-family:'JetBrains Mono', monospace; font-size:.78rem; letter-spacing:.03em; color:var(--dim); text-decoration:none; transition:color .18s ease; }
+    .nav-link:hover{ color:var(--accent); }
+    .nav-link.active{ color:var(--accent); }
 
-    .sidebar-link {
-      display: flex; align-items: center; gap: 12px;
-      padding: 10px 12px;
-      border-radius: 10px;
-      color: #9ca3af;
-      text-decoration: none;
-      font-size: 0.875rem;
-      font-weight: 500;
-      transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
-    }
-    .sidebar-link:hover {
-      background: rgba(37,99,235,0.12);
-      color: #60a5fa;
-      transform: translateX(4px);
-    }
-    .sidebar-link i { width: 18px; text-align: center; font-size: 0.9rem; }
+    .sidebar-link{ display:flex; align-items:center; gap:12px; padding:10px 12px; border:1px solid transparent; color:var(--dim); text-decoration:none; font-family:'JetBrains Mono', monospace; font-size:.8rem; transition:border-color .18s ease, color .18s ease, background .18s ease; }
+    .sidebar-link:hover{ border-color:var(--border); color:var(--accent); background:var(--panel); }
+    .sidebar-link i{ width:16px; text-align:center; font-size:.85rem; }
+    #sidebar{ transition:transform .3s cubic-bezier(.4,0,.2,1); }
+    #sidebarOverlay{ transition:opacity .3s ease; }
 
-    #sidebar {
-      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:9px;
+      padding:12px 26px; font-family:'JetBrains Mono', monospace; font-weight:600; font-size:.78rem;
+      text-transform:uppercase; letter-spacing:.05em; text-decoration:none; cursor:pointer; border:none;
+      clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+      transition:transform .16s ease, box-shadow .16s ease, background .16s ease, opacity .16s ease;
     }
-    #sidebarOverlay { transition: opacity 0.3s ease; }
+    .btn:active{ transform:scale(.97) !important; }
+    .btn-primary{ background:var(--accent); color:#0a0c08; }
+    .btn-primary:hover{ box-shadow:0 0 0 1px var(--accent), 0 10px 26px rgba(255,122,26,.25); transform:translateY(-2px); }
+    .btn-ghost{ background:var(--panel); border:1px solid var(--border); color:var(--text); }
+    .btn-ghost:hover{ border-color:var(--accent-dim); color:var(--accent); transform:translateY(-2px); }
 
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 11px 28px;
-      border-radius: 12px;
-      font-weight: 600; font-size: 0.875rem;
-      text-decoration: none;
-      cursor: pointer; border: none;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, opacity 0.18s ease;
-      will-change: transform;
+    .panel{
+      background:var(--panel); border:1px solid var(--border); padding:26px; text-decoration:none; color:inherit; display:block;
+      transition:transform .2s ease, border-color .2s ease, background .2s ease;
     }
-    .btn:active { transform: scale(0.97) !important; }
-    .btn-primary { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; }
-    .btn-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 30px rgba(37,99,235,0.45); }
-    .btn-ghost { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #fff; }
-    .btn-ghost:hover { transform: translateY(-3px) scale(1.02); background: rgba(255,255,255,0.1); box-shadow: 0 10px 24px rgba(0,0,0,0.3); }
+    .panel:hover{ transform:translateY(-4px); border-color:var(--accent-dim); background:var(--panel-alt); }
+    .panel .tag{ width:38px; height:38px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; margin-bottom:16px; transition:border-color .2s ease; }
+    .panel:hover .tag{ border-color:var(--accent); }
+    .panel .tag i{ color:var(--accent); font-size:1rem; }
 
-    .icon-animated {
-      display: inline-flex; align-items: center; justify-content: center;
-      transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    .btn:hover .icon-animated { transform: scale(1.25) rotate(-8deg); }
+    .social-icon{ width:32px; height:32px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--dim); font-size:.85rem; text-decoration:none; transition:border-color .18s ease, color .18s ease; }
+    .social-icon:hover{ border-color:var(--accent); color:var(--accent); }
 
-    .feature-card {
-      background: rgba(255,255,255,0.025);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 18px;
-      padding: 28px;
-      text-decoration: none;
-      color: inherit;
-      display: block;
-      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
-    }
-    .feature-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 22px 48px rgba(37,99,235,0.18);
-      border-color: rgba(96,165,250,0.25);
-      background: rgba(255,255,255,0.04);
-    }
-    .feature-card .card-icon {
-      width: 48px; height: 48px;
-      background: rgba(37,99,235,0.15);
-      border: 1px solid rgba(96,165,250,0.15);
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 18px;
-      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), background 0.25s ease;
-    }
-    .feature-card:hover .card-icon {
-      transform: scale(1.15) rotate(-6deg);
-      background: rgba(37,99,235,0.25);
-    }
-    .feature-card .card-icon i { color: #60a5fa; font-size: 1.1rem; }
+    .footer-link{ color:var(--dim); text-decoration:none; font-size:.82rem; font-family:'JetBrains Mono', monospace; display:flex; align-items:center; gap:8px; transition:color .18s ease, transform .18s ease; }
+    .footer-link:hover{ color:var(--accent); transform:translateX(3px); }
+    .divider-line{ height:1px; background:linear-gradient(90deg, transparent, var(--border), transparent); }
 
-    .social-icon {
-      width: 36px; height: 36px;
-      border-radius: 9px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      display: flex; align-items: center; justify-content: center;
-      color: #6b7280;
-      font-size: 0.9rem;
-      text-decoration: none;
-      transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    .scan-wrap{ position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+    .scan-wrap::after{
+      content:''; position:absolute; left:0; right:0; top:-4%; height:1px;
+      background:linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity:.45; animation:scan 7s linear infinite;
     }
-    .social-icon:hover { background: rgba(37,99,235,0.2); color: #60a5fa; transform: translateY(-3px); }
+    @keyframes scan{ 0%{ top:-4%; } 100%{ top:104%; } }
 
-    .footer-link { color: #6b7280; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; transition: color 0.18s ease, transform 0.18s ease; }
-    .footer-link:hover { color: #60a5fa; transform: translateX(4px); }
-
-    .hero-avatar {
-      width: 80px; height: 80px;
-      border-radius: 50%;
-      border: 2px solid rgba(96,165,250,0.5);
-      object-fit: cover;
-      box-shadow: 0 0 0 6px rgba(37,99,235,0.1), 0 0 30px rgba(37,99,235,0.3);
-    }
-
-    [data-anim] {
-      will-change: transform, opacity;
-      transition: opacity 0.65s cubic-bezier(0.4,0,0.2,1), transform 0.65s cubic-bezier(0.4,0,0.2,1);
-    }
-    [data-anim="fade-up"]    { opacity: 0; transform: translateY(32px); }
-    [data-anim="fade-down"]  { opacity: 0; transform: translateY(-32px); }
-    [data-anim="zoom-in"]    { opacity: 0; transform: scale(0.88); }
-    [data-anim="zoom-out"]   { opacity: 0; transform: scale(1.08); }
-    [data-anim="slide-left"] { opacity: 0; transform: translateX(-32px); }
-    [data-anim="slide-right"]{ opacity: 0; transform: translateX(32px); }
-    [data-anim].in-view {
-      opacity: 1;
-      transform: translateY(0) scale(1) translateX(0);
-    }
-    [data-delay="1"] { transition-delay: 0.08s; }
-    [data-delay="2"] { transition-delay: 0.16s; }
-    [data-delay="3"] { transition-delay: 0.24s; }
-    [data-delay="4"] { transition-delay: 0.32s; }
-    [data-delay="5"] { transition-delay: 0.40s; }
-    [data-delay="6"] { transition-delay: 0.48s; }
-
-    .badge-pill {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(37,99,235,0.12);
-      border: 1px solid rgba(96,165,250,0.2);
-      border-radius: 999px;
-      padding: 5px 14px;
-      font-size: 0.75rem; font-weight: 500;
-      color: #60a5fa;
-    }
-    .status-dot {
-      width: 7px; height: 7px; border-radius: 50%; background: #4ade80;
-      box-shadow: 0 0 6px #4ade80;
-    }
-    .divider-line {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
-    }
+    [data-anim]{ will-change:transform, opacity; transition:opacity .6s cubic-bezier(.4,0,.2,1), transform .6s cubic-bezier(.4,0,.2,1); }
+    [data-anim="fade-up"]{ opacity:0; transform:translateY(24px); }
+    [data-anim="zoom-in"]{ opacity:0; transform:scale(.94); }
+    [data-anim="slide-left"]{ opacity:0; transform:translateX(-20px); }
+    [data-anim="slide-right"]{ opacity:0; transform:translateX(20px); }
+    [data-anim].in-view{ opacity:1; transform:translateY(0) scale(1) translateX(0); }
+    [data-delay="1"]{ transition-delay:.08s; }
+    [data-delay="2"]{ transition-delay:.16s; }
+    [data-delay="3"]{ transition-delay:.24s; }
+    [data-delay="4"]{ transition-delay:.32s; }
   </style>
 </head>
 <body>
-  <div class="blob w-[420px] h-[420px] bg-blue-800/20 top-[-100px] left-[-80px]" style="animation: blobFloat 12s ease-in-out infinite;"></div>
-  <div class="blob w-[360px] h-[360px] bg-blue-600/12 bottom-[5%] right-[-80px]" style="animation: blobFloat 16s ease-in-out 4s infinite;"></div>
-  <div class="blob w-[280px] h-[280px] bg-sky-700/10 top-[40%] left-[60%]" style="animation: blobFloat 20s ease-in-out 8s infinite;"></div>
+  <div class="frame-corner tl"></div>
+  <div class="frame-corner tr"></div>
+  <div class="frame-corner bl"></div>
+  <div class="frame-corner br"></div>
 
-  <nav class="nav-glass sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-5 h-12 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-3 no-underline group">
-        <img src="https://files.gifted.co.ke/image/u90mimage.jpg" alt="HUNTER XMD" class="w-8 h-8 rounded-full border border-blue-500/50 object-cover" style="transition: box-shadow 0.2s ease;" onmouseover="this.style.boxShadow='0 0 14px rgba(59,130,246,0.6)'" onmouseout="this.style.boxShadow='none'">
-        <span class="text-base font-bold gradient-text">HUNTER-XMD</span>
+  <nav class="nav-bar sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3 no-underline">
+        <div class="reticle" style="padding:2px;">
+          <img src="https://files.gifted.co.ke/image/u90mimage.jpg" alt="HUNTER XMD" class="w-8 h-8 object-cover">
+        </div>
+        <span class="display font-bold text-base tracking-wide">HUNTER<span style="color:var(--accent)">·</span>XMD</span>
       </a>
       <div class="hidden md:flex items-center gap-7">
-        <a href="https://github.com/mauricegift/atassa" target="_blank" class="nav-link text-gray-400 text-sm font-medium no-underline flex items-center gap-1.5"><i class="fab fa-github text-xs"></i> Source Code</a>
-        <a href="/pair" class="nav-link text-gray-400 text-sm font-medium no-underline flex items-center gap-1.5"><i class="fas fa-link text-xs"></i> Pair Code</a>
-        <a href="/qr" class="nav-link text-gray-400 text-sm font-medium no-underline flex items-center gap-1.5"><i class="fas fa-qrcode text-xs"></i> QR Code</a>
-        <a href="https://t.me/mauricegift" target="_blank" class="nav-link text-gray-400 text-sm font-medium no-underline flex items-center gap-1.5"><i class="fab fa-telegram text-xs"></i> Support</a>
+        <a href="/" class="nav-link active">[ HOME ]</a>
+        <a href="/pair" class="nav-link">[ PAIR ]</a>
+        <a href="/qr" class="nav-link">[ QR ]</a>
+        <a href="https://github.com/mauricegift/atassa" target="_blank" class="nav-link">[ SOURCE ]</a>
       </div>
       <div class="flex items-center gap-3">
-        <a href="/pair" class="hidden md:inline-flex btn btn-primary py-2 px-5 text-xs">
-          <span class="icon-animated"><i class="fas fa-link"></i></span> Get Session
+        <span class="hidden md:flex items-center gap-2 mono text-xs" style="color:var(--dim)">
+          <span class="status-dot"></span> ONLINE
+        </span>
+        <a href="/pair" class="hidden md:inline-flex btn btn-primary py-2 px-4 text-xs">
+          <i class="fas fa-link"></i> Connect
         </a>
-        <button id="menuBtn" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 border border-white/8 text-gray-500 outline-none focus:outline-none focus:ring-0" style="transition: background 0.18s ease, color 0.18s ease;">
+        <button id="menuBtn" class="md:hidden w-9 h-9 flex items-center justify-center border border-[var(--border)]" style="color:var(--dim);">
           <i class="fas fa-bars" id="menuIcon"></i>
         </button>
       </div>
     </div>
   </nav>
 
-  <div id="sidebarOverlay" class="fixed inset-0 z-40 bg-black/60 opacity-0 pointer-events-none"></div>
-  <aside id="sidebar" class="fixed top-0 left-0 z-50 h-full w-72 bg-[#0a0a14] border-r border-white/6 flex flex-col pt-5 pb-8 transform -translate-x-full rounded-r-3xl">
-    <div class="flex items-center justify-between px-5 mb-6">
-      <a href="/" class="flex items-center gap-2.5 no-underline">
-        <img src="https://files.gifted.co.ke/image/u90mimage.jpg" alt="HUNTER XMD" class="w-8 h-8 rounded-full border border-blue-500/50 object-cover">
-        <span class="text-sm font-bold gradient-text">HUNTER-XMD</span>
-      </a>
-      <button id="closeBtn" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 text-gray-400" style="transition: background 0.18s, color 0.18s;">
-        <i class="fas fa-times text-sm"></i>
-      </button>
+  <div id="sidebarOverlay" class="fixed inset-0 bg-black/70 z-40 opacity-0 pointer-events-none md:hidden"></div>
+  <aside id="sidebar" class="fixed top-0 left-0 h-full w-72 z-50 -translate-x-full md:hidden" style="background:var(--panel); border-right:1px solid var(--border);">
+    <div class="p-5 flex items-center justify-between" style="border-bottom:1px solid var(--border);">
+      <span class="display font-bold text-sm tracking-wide">HUNTER·XMD</span>
+      <button id="closeBtn" class="w-8 h-8 flex items-center justify-center" style="color:var(--dim);"><i class="fas fa-times"></i></button>
     </div>
-    <div class="px-3 flex-1 space-y-1">
-      <a href="/" class="sidebar-link"><i class="fas fa-home"></i> Home</a>
+    <div class="p-4 flex flex-col gap-1.5">
+      <a href="/" class="sidebar-link"><i class="fas fa-house"></i> Home</a>
       <a href="/pair" class="sidebar-link"><i class="fas fa-link"></i> Pair Code</a>
       <a href="/qr" class="sidebar-link"><i class="fas fa-qrcode"></i> QR Code</a>
       <a href="https://github.com/mauricegift/atassa" target="_blank" class="sidebar-link"><i class="fab fa-github"></i> Source Code</a>
       <a href="https://t.me/mauricegift" target="_blank" class="sidebar-link"><i class="fab fa-telegram"></i> Support</a>
-      <a href="https://whatsapp.com/channel/0029VbCpYtZLtOj5LDuj7Q1p" target="_blank" class="sidebar-link"><i class="fab fa-whatsapp"></i> WA Channel</a>
-    </div>
-    <div class="px-5 pt-5 border-t border-white/6">
-      <p class="text-gray-600 text-xs">Powered by OBED TECH</p>
     </div>
   </aside>
 
   <main class="relative z-10">
-    <section class="min-h-screen flex flex-col items-center justify-center text-center px-5 pt-24 pb-16">
-      <div class="max-w-3xl mx-auto w-full">
-        <div class="flex justify-center mb-6" data-anim="zoom-in">
-          <img src="https://files.gifted.co.ke/image/u90mimage.jpg" alt="HUNTER XMD" class="hero-avatar">
+    <section class="relative py-24 px-5 overflow-hidden">
+      <div class="scan-wrap"></div>
+      <div class="max-w-3xl mx-auto text-center relative">
+        <div class="inline-flex items-center gap-2 mb-6 px-3 py-1.5 border border-[var(--border)]" data-anim="fade-up">
+          <span class="status-dot"></span>
+          <span class="eyebrow">session.generator // live</span>
         </div>
-        <div class="flex justify-center mb-5" data-anim="fade-up" data-delay="1">
-          <span class="badge-pill"><span class="status-dot"></span> Session Server Active</span>
-        </div>
-        <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-[1.1] mb-5 gradient-text" data-anim="fade-up" data-delay="2">
-          Advanced WhatsApp<br>Bot Solution
+        <h1 class="display font-bold text-4xl sm:text-5xl leading-tight mb-5" data-anim="fade-up" data-delay="1">
+          Acquire your <span style="color:var(--accent)">WhatsApp</span> bot session
         </h1>
-        <p class="text-gray-400 text-base sm:text-lg mb-10 max-w-xl mx-auto leading-relaxed" data-anim="fade-up" data-delay="3">
-          Hunter-XMD delivers powerful WhatsApp automation with pair code and QR login — fast, secure, and easy to use.
+        <p class="mb-10 text-sm sm:text-base max-w-xl mx-auto leading-relaxed" style="color:var(--dim)" data-anim="fade-up" data-delay="2">
+          Hunter-XMD links your number to a WhatsApp bot in seconds. Pick a pairing code or scan a QR — no phone left waiting.
         </p>
-        <div class="flex flex-row items-center justify-center gap-3" data-anim="fade-up" data-delay="4">
-          <a href="/pair" class="btn btn-primary">
-            <span class="icon-animated"><i class="fas fa-link"></i></span> Pair Code
-          </a>
-          <a href="/qr" class="btn btn-ghost">
-            <span class="icon-animated"><i class="fas fa-qrcode"></i></span> QR Code
-          </a>
-        </div>
-      </div>
-      <div class="mt-20 w-full max-w-3xl mx-auto grid grid-cols-3 gap-4" data-anim="fade-up" data-delay="5">
-        <div class="bg-white/[0.03] border border-white/6 rounded-2xl p-4 text-center">
-          <p class="text-2xl font-bold gradient-text">2</p>
-          <p class="text-gray-500 text-xs mt-1">Login Methods</p>
-        </div>
-        <div class="bg-white/[0.03] border border-white/6 rounded-2xl p-4 text-center">
-          <p class="text-2xl font-bold gradient-text">100%</p>
-          <p class="text-gray-500 text-xs mt-1">Open Source</p>
-        </div>
-        <div class="bg-white/[0.03] border border-white/6 rounded-2xl p-4 text-center">
-          <p class="text-2xl font-bold gradient-text">24/7</p>
-          <p class="text-gray-500 text-xs mt-1">Available</p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3" data-anim="zoom-in" data-delay="2">
+          <a href="/pair" class="btn btn-primary w-full sm:w-auto"><i class="fas fa-link"></i> Get Pair Code</a>
+          <a href="/qr" class="btn btn-ghost w-full sm:w-auto"><i class="fas fa-qrcode"></i> Scan QR Instead</a>
         </div>
       </div>
     </section>
@@ -314,40 +192,40 @@
 
     <section class="py-20 px-5">
       <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-14">
-          <h2 class="text-3xl sm:text-4xl font-extrabold gradient-text mb-3" data-anim="fade-up">Key Features</h2>
-          <p class="text-gray-500 text-sm max-w-lg mx-auto" data-anim="fade-up" data-delay="1">Everything you need to connect and automate your WhatsApp experience.</p>
+        <div class="mb-12 text-center" data-anim="fade-up">
+          <p class="eyebrow mb-3">what you get</p>
+          <h2 class="display font-bold text-2xl sm:text-3xl">Built for reliable connections</h2>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <a href="/pair" class="feature-card" data-anim="fade-up" data-delay="1">
-            <div class="card-icon"><i class="fas fa-link"></i></div>
-            <h3 class="text-white font-semibold mb-2">Pair Code Login</h3>
-            <p class="text-gray-500 text-sm leading-relaxed">Connect your WhatsApp account with a simple pairing code. No phone access needed.</p>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <a href="/pair" class="panel" data-anim="fade-up" data-delay="1">
+            <div class="tag"><i class="fas fa-link"></i></div>
+            <h3 class="font-semibold mb-2">Pair Code Login</h3>
+            <p class="text-sm leading-relaxed" style="color:var(--dim)">Connect your WhatsApp account with a simple pairing code. No phone access needed.</p>
           </a>
-          <a href="/qr" class="feature-card" data-anim="fade-up" data-delay="2">
-            <div class="card-icon"><i class="fas fa-qrcode"></i></div>
-            <h3 class="text-white font-semibold mb-2">QR Code Login</h3>
-            <p class="text-gray-500 text-sm leading-relaxed">Traditional QR scanning for a quick, seamless connection to your WhatsApp account.</p>
+          <a href="/qr" class="panel" data-anim="fade-up" data-delay="2">
+            <div class="tag"><i class="fas fa-qrcode"></i></div>
+            <h3 class="font-semibold mb-2">QR Code Login</h3>
+            <p class="text-sm leading-relaxed" style="color:var(--dim)">Traditional QR scanning for a quick, seamless connection to your WhatsApp account.</p>
           </a>
-          <a href="https://github.com/mauricegift/atassa" target="_blank" class="feature-card" data-anim="fade-up" data-delay="3">
-            <div class="card-icon"><i class="fas fa-code"></i></div>
-            <h3 class="text-white font-semibold mb-2">Open Source</h3>
-            <p class="text-gray-500 text-sm leading-relaxed">Fully available codebase on GitHub. Customize and extend it to match your exact needs.</p>
+          <a href="https://github.com/mauricegift/atassa" target="_blank" class="panel" data-anim="fade-up" data-delay="3">
+            <div class="tag"><i class="fas fa-code"></i></div>
+            <h3 class="font-semibold mb-2">Open Source</h3>
+            <p class="text-sm leading-relaxed" style="color:var(--dim)">Fully available codebase on GitHub. Customize and extend it to match your exact needs.</p>
           </a>
-          <a href="https://t.me/mauricegift" target="_blank" class="feature-card" data-anim="fade-up" data-delay="2">
-            <div class="card-icon"><i class="fas fa-headset"></i></div>
-            <h3 class="text-white font-semibold mb-2">Premium Support</h3>
-            <p class="text-gray-500 text-sm leading-relaxed">Dedicated help from our team to get you set up and running in no time.</p>
+          <a href="https://t.me/mauricegift" target="_blank" class="panel" data-anim="fade-up" data-delay="2">
+            <div class="tag"><i class="fas fa-headset"></i></div>
+            <h3 class="font-semibold mb-2">Premium Support</h3>
+            <p class="text-sm leading-relaxed" style="color:var(--dim)">Dedicated help from our team to get you set up and running in no time.</p>
           </a>
-          <a href="https://whatsapp.com/channel/0029VbCpYtZLtOj5LDuj7Q1p" target="_blank" class="feature-card" data-anim="fade-up" data-delay="3">
-            <div class="card-icon"><i class="fab fa-whatsapp"></i></div>
-            <h3 class="text-white font-semibold mb-2">Regular Updates</h3>
-            <p class="text-gray-500 text-sm leading-relaxed">Stay current with the latest features and fixes via our WhatsApp channel.</p>
+          <a href="https://whatsapp.com/channel/0029VbCpYtZLtOj5LDuj7Q1p" target="_blank" class="panel" data-anim="fade-up" data-delay="3">
+            <div class="tag"><i class="fab fa-whatsapp"></i></div>
+            <h3 class="font-semibold mb-2">Regular Updates</h3>
+            <p class="text-sm leading-relaxed" style="color:var(--dim)">Stay current with the latest features and fixes via our WhatsApp channel.</p>
           </a>
-          <div class="feature-card cursor-default" data-anim="fade-up" data-delay="4">
-            <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
-            <h3 class="text-white font-semibold mb-2">Secure Sessions</h3>
-            <p class="text-gray-500 text-sm leading-relaxed">End-to-end encrypted session handling keeps your WhatsApp credentials safe.</p>
+          <div class="panel cursor-default" data-anim="fade-up" data-delay="4">
+            <div class="tag"><i class="fas fa-shield-alt"></i></div>
+            <h3 class="font-semibold mb-2">Secure Sessions</h3>
+            <p class="text-sm leading-relaxed" style="color:var(--dim)">End-to-end encrypted session handling keeps your WhatsApp credentials safe.</p>
           </div>
         </div>
       </div>
@@ -357,21 +235,17 @@
 
     <section class="py-20 px-5">
       <div class="max-w-2xl mx-auto text-center">
-        <div data-anim="zoom-in">
-          <div class="w-14 h-14 rounded-2xl gradient-bg flex items-center justify-center mx-auto mb-6" style="box-shadow: 0 8px 28px rgba(37,99,235,0.4);">
-            <i class="fas fa-bolt text-white text-xl"></i>
+        <div class="reticle inline-block p-6" data-anim="zoom-in">
+          <div class="w-12 h-12 border border-[var(--border)] flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-bolt" style="color:var(--accent)"></i>
           </div>
-          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">Ready to Get Started?</h2>
-          <p class="text-gray-400 text-sm sm:text-base mb-9 leading-relaxed max-w-lg mx-auto">
+          <h2 class="display font-bold text-2xl sm:text-3xl mb-4">Ready to connect?</h2>
+          <p class="text-sm sm:text-base mb-9 leading-relaxed max-w-lg mx-auto" style="color:var(--dim)">
             Hunter-XMD makes WhatsApp automation effortless — group management, messaging, and third-party integrations in one place.
           </p>
           <div class="flex flex-row items-center justify-center gap-3">
-            <a href="/pair" class="btn btn-primary" data-anim="slide-left" data-delay="1">
-              <span class="icon-animated"><i class="fas fa-link"></i></span> Connect Now
-            </a>
-            <a href="https://github.com/mauricegift/atassa" target="_blank" class="btn btn-ghost" data-anim="slide-right" data-delay="1">
-              <span class="icon-animated"><i class="fab fa-github"></i></span> View on GitHub
-            </a>
+            <a href="/pair" class="btn btn-primary"><i class="fas fa-link"></i> Connect Now</a>
+            <a href="https://github.com/mauricegift/atassa" target="_blank" class="btn btn-ghost"><i class="fab fa-github"></i> View on GitHub</a>
           </div>
         </div>
       </div>
@@ -379,15 +253,17 @@
 
     <div class="divider-line"></div>
 
-    <footer class="py-12 px-5 bg-[#040408]">
+    <footer class="py-12 px-5" style="background:var(--panel);">
       <div class="max-w-6xl mx-auto">
         <div class="mb-10">
           <div class="mb-8" data-anim="slide-left">
             <a href="/" class="flex items-center gap-2.5 no-underline mb-3">
-              <img src="https://files.gifted.co.ke/image/u90mimage.jpg" alt="HUNTER XMD" class="w-7 h-7 rounded-full border border-blue-500/40 object-cover">
-              <span class="text-sm font-bold gradient-text">HUNTER-XMD</span>
+              <div class="reticle" style="padding:1px;">
+                <img src="https://files.gifted.co.ke/image/u90mimage.jpg" alt="HUNTER XMD" class="w-6 h-6 object-cover">
+              </div>
+              <span class="mono text-sm font-bold">HUNTER-XMD</span>
             </a>
-            <p class="text-gray-600 text-xs leading-relaxed mb-4">Advanced WhatsApp bot solution with powerful automation and seamless integration capabilities.</p>
+            <p class="text-xs leading-relaxed mb-4" style="color:var(--dim)">Advanced WhatsApp bot solution with powerful automation and seamless integration capabilities.</p>
             <div class="flex gap-2">
               <a href="https://github.com/mauricegift/atassa" target="_blank" class="social-icon"><i class="fab fa-github"></i></a>
               <a href="https://t.me/mauricegift" target="_blank" class="social-icon"><i class="fab fa-telegram"></i></a>
@@ -396,27 +272,27 @@
           </div>
           <div class="grid grid-cols-2 gap-8">
             <div data-anim="fade-up" data-delay="1">
-              <h3 class="text-white text-xs font-semibold uppercase tracking-wider mb-4">Quick Links</h3>
+              <h3 class="eyebrow mb-4">Quick Links</h3>
               <ul class="space-y-2.5">
-                <li><a href="/pair" class="footer-link"><i class="fas fa-chevron-right text-blue-500 text-xs"></i> Pair Code</a></li>
-                <li><a href="/qr" class="footer-link"><i class="fas fa-chevron-right text-blue-500 text-xs"></i> QR Code</a></li>
-                <li><a href="https://github.com/mauricegift/atassa" target="_blank" class="footer-link"><i class="fas fa-chevron-right text-blue-500 text-xs"></i> Source Code</a></li>
-                <li><a href="/health" class="footer-link"><i class="fas fa-chevron-right text-blue-500 text-xs"></i> Health Check</a></li>
+                <li><a href="/pair" class="footer-link"><i class="fas fa-chevron-right text-xs" style="color:var(--accent)"></i> Pair Code</a></li>
+                <li><a href="/qr" class="footer-link"><i class="fas fa-chevron-right text-xs" style="color:var(--accent)"></i> QR Code</a></li>
+                <li><a href="https://github.com/mauricegift/atassa" target="_blank" class="footer-link"><i class="fas fa-chevron-right text-xs" style="color:var(--accent)"></i> Source Code</a></li>
+                <li><a href="/health" class="footer-link"><i class="fas fa-chevron-right text-xs" style="color:var(--accent)"></i> Health Check</a></li>
               </ul>
             </div>
             <div data-anim="slide-right">
-              <h3 class="text-white text-xs font-semibold uppercase tracking-wider mb-4">Connect</h3>
+              <h3 class="eyebrow mb-4">Connect</h3>
               <ul class="space-y-2.5">
-                <li><a href="https://t.me/mauricegift" target="_blank" class="footer-link"><i class="fab fa-telegram text-blue-500 text-xs"></i> Telegram Support</a></li>
-                <li><a href="https://whatsapp.com/channel/0029VbCpYtZLtOj5LDuj7Q1p" target="_blank" class="footer-link"><i class="fab fa-whatsapp text-blue-500 text-xs"></i> WhatsApp Channel</a></li>
-                <li><a href="https://github.com/mauricegift/atassa" target="_blank" class="footer-link"><i class="fab fa-github text-blue-500 text-xs"></i> GitHub</a></li>
+                <li><a href="https://t.me/mauricegift" target="_blank" class="footer-link"><i class="fab fa-telegram text-xs" style="color:var(--accent)"></i> Telegram Support</a></li>
+                <li><a href="https://whatsapp.com/channel/0029VbCpYtZLtOj5LDuj7Q1p" target="_blank" class="footer-link"><i class="fab fa-whatsapp text-xs" style="color:var(--accent)"></i> WhatsApp Channel</a></li>
+                <li><a href="https://github.com/mauricegift/atassa" target="_blank" class="footer-link"><i class="fab fa-github text-xs" style="color:var(--accent)"></i> GitHub</a></li>
               </ul>
             </div>
           </div>
         </div>
         <div class="divider-line mb-5"></div>
-        <p class="text-gray-700 text-xs text-center">
-          &copy; <span id="yr"></span> HUNTER-XMD &mdash; Built by <a href="https://github.com/mauricegift" target="_blank" class="text-blue-400 no-underline font-medium" style="transition:color 0.18s;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#3b82f6'">OBED TECH</a>
+        <p class="mono text-xs text-center" style="color:var(--dim)">
+          &copy; <span id="yr"></span> HUNTER-XMD &mdash; Built by <a href="https://github.com/mauricegift" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:600;">OBED TECH</a>
         </p>
       </div>
     </footer>
@@ -472,10 +348,6 @@
       const img = new Image();
       img.crossOrigin = 'anonymous';
       img.onload = () => {
-        ctx.beginPath();
-        ctx.arc(32, 32, 32, 0, Math.PI * 2);
-        ctx.closePath();
-        ctx.clip();
         ctx.drawImage(img, 0, 0, 64, 64);
         const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
         link.type = 'image/png';
